@@ -1,8 +1,10 @@
 # pragma once
 
+#include <string>
+
 class Socket {
     private:
-        const int fd;
+        int fd;
 
     public:
         Socket();
@@ -17,4 +19,8 @@ class Socket {
 
         // Promising the compiler that we won't change any data member
         int getFd() const;
+
+        void connectToServer(const std::string& server_address, int server_port);
+        void sendMessage(const std::string& message);
+        std::string receiveMessage();
 };
