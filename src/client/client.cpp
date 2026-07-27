@@ -1,12 +1,7 @@
-#include "../../include/client/client.hpp"
-#include "../../include/common/socket.hpp"
+#include "client/client.hpp"
+#include "common/socket.hpp"
 
 #include <string>
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
 #include <iostream>
 
 

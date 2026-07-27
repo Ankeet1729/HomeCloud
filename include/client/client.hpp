@@ -1,7 +1,7 @@
 # pragma once
 
 #include <string>
-#include "../common/socket.hpp"
+#include "common/socket.hpp"
 
 class EchoClient {
     

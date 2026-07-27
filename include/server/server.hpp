@@ -10,10 +10,10 @@ class EchoServer {
     private:
         Socket listenSocket;
         Socket acceptSocket;
+        const int listenPort;
         void acceptClient();
         std::string receiveMessage();
         void sendMessage(const std::string& message);
-        const int listenPort;
     
     public:
         EchoServer(const int listenPort);

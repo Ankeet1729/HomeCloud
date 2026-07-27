@@ -23,4 +23,7 @@ class Socket {
         void connectToServer(const std::string& server_address, int server_port);
         void sendMessage(const std::string& message);
         std::string receiveMessage();
+
+        void acceptClient();
+        void listen(const int port);
 };
