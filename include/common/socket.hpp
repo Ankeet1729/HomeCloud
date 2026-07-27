@@ -21,9 +21,11 @@ class Socket {
         int getFd() const;
 
         void connectToServer(const std::string& server_address, int server_port);
+
+        void bind(const int port);
+        void listen();
+        void acceptClient(int listenFd);
+
         void sendMessage(const std::string& message);
         std::string receiveMessage();
-
-        void acceptClient();
-        void listen(const int port);
 };

@@ -9,12 +9,13 @@ EchoServer::EchoServer(const int listenPort)
     : listenPort(listenPort) {};
 
 void EchoServer::start() {
-    listenSocket.listen(listenPort);
+    listenSocket.listen();
+    listenSocket.bind(listenPort);
     std::cout << "Server Started" << std::endl;
 }
 
 void EchoServer::acceptClient() {
-    acceptSocket.acceptClient();
+    acceptSocket.acceptClient(listenSocket.getFd());
 }
 
 void EchoServer::sendMessage(const std::string& message) {
