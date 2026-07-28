@@ -1,8 +1,14 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -Iinclude
-BUILD_DIR := build
-OBJ_DIR := $(BUILD_DIR)/obj
+CPPFLAGS := -Iinclude
+COMMON_CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic
+DEBUG_CXXFLAGS := -g -O0
+RELEASE_CXXFLAGS := -O2 -DNDEBUG
 SRC_DIR := src
+
+DEBUG_BUILD_DIR := build/debug
+DEBUG_OBJ_DIR := $(DEBUG_BUILD_DIR)/obj
+RELEASE_BUILD_DIR := build/release
+RELEASE_OBJ_DIR := $(RELEASE_BUILD_DIR)/obj
 
 CLIENT_SRCS := \
 	$(SRC_DIR)/client/main.cpp \
@@ -14,31 +20,55 @@ SERVER_SRCS := \
 	$(SRC_DIR)/server/server.cpp \
 	$(SRC_DIR)/common/socket.cpp
 
-CLIENT_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CLIENT_SRCS))
-SERVER_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SERVER_SRCS))
+DEBUG_CLIENT_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(DEBUG_OBJ_DIR)/%.o,$(CLIENT_SRCS))
+DEBUG_SERVER_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(DEBUG_OBJ_DIR)/%.o,$(SERVER_SRCS))
+RELEASE_CLIENT_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(RELEASE_OBJ_DIR)/%.o,$(CLIENT_SRCS))
+RELEASE_SERVER_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(RELEASE_OBJ_DIR)/%.o,$(SERVER_SRCS))
 
-CLIENT_BIN := $(BUILD_DIR)/client
-SERVER_BIN := $(BUILD_DIR)/server
+DEBUG_CLIENT_BIN := $(DEBUG_BUILD_DIR)/client
+DEBUG_SERVER_BIN := $(DEBUG_BUILD_DIR)/server
+RELEASE_CLIENT_BIN := $(RELEASE_BUILD_DIR)/client
+RELEASE_SERVER_BIN := $(RELEASE_BUILD_DIR)/server
 
-.PHONY: all clean
+.PHONY: all debug release clean
 
-all: $(CLIENT_BIN) $(SERVER_BIN)
+all: release
 
-$(CLIENT_BIN): $(CLIENT_OBJS) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+debug: $(DEBUG_CLIENT_BIN) $(DEBUG_SERVER_BIN)
 
-$(SERVER_BIN): $(SERVER_OBJS) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+release: $(RELEASE_CLIENT_BIN) $(RELEASE_SERVER_BIN)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+$(DEBUG_CLIENT_BIN): $(DEBUG_CLIENT_OBJS) | $(DEBUG_BUILD_DIR)
+	$(CXX) $(COMMON_CXXFLAGS) $(DEBUG_CXXFLAGS) $^ -o $@
+
+$(DEBUG_SERVER_BIN): $(DEBUG_SERVER_OBJS) | $(DEBUG_BUILD_DIR)
+	$(CXX) $(COMMON_CXXFLAGS) $(DEBUG_CXXFLAGS) $^ -o $@
+
+$(RELEASE_CLIENT_BIN): $(RELEASE_CLIENT_OBJS) | $(RELEASE_BUILD_DIR)
+	$(CXX) $(COMMON_CXXFLAGS) $(RELEASE_CXXFLAGS) $^ -o $@
+
+$(RELEASE_SERVER_BIN): $(RELEASE_SERVER_OBJS) | $(RELEASE_BUILD_DIR)
+	$(CXX) $(COMMON_CXXFLAGS) $(RELEASE_CXXFLAGS) $^ -o $@
+
+$(DEBUG_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(DEBUG_OBJ_DIR)
 	mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(COMMON_CXXFLAGS) $(DEBUG_CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(RELEASE_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(RELEASE_OBJ_DIR)
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(COMMON_CXXFLAGS) $(RELEASE_CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+$(DEBUG_BUILD_DIR):
+	mkdir -p $(DEBUG_BUILD_DIR)
+
+$(RELEASE_BUILD_DIR):
+	mkdir -p $(RELEASE_BUILD_DIR)
+
+$(DEBUG_OBJ_DIR):
+	mkdir -p $(DEBUG_OBJ_DIR)
+
+$(RELEASE_OBJ_DIR):
+	mkdir -p $(RELEASE_OBJ_DIR)
 
 clean:
-	rm -rf $(OBJ_DIR) $(CLIENT_BIN) $(SERVER_BIN)
+	rm -rf build

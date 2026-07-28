@@ -9,8 +9,8 @@ EchoServer::EchoServer(const int listenPort)
     : listenPort(listenPort) {};
 
 void EchoServer::start() {
-    listenSocket.listen();
     listenSocket.bind(listenPort);
+    listenSocket.listen();
     std::cout << "Server Listening on port: " << listenPort << "\n";
     acceptClient();
     std::cout << "Client Connected" << "\n";
@@ -20,8 +20,11 @@ void EchoServer::start() {
 
     while(true) {
         std::string receivedMessage = receiveMessage();
-        if(receivedMessage == "" or receivedMessage == "exit")
+        if(receivedMessage == "" or receivedMessage == "exit") {
+            std::cout << "Exiting.." << "\n";
             break;
+        }
+        std::cout << "Client sent message: " << receivedMessage << ".. Echoing back" << "\n";
 
         sendMessage(receivedMessage);
     } 
