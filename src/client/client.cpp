@@ -18,7 +18,7 @@ void EchoClient::start() {
         std::string message(send_buffer);
         sendMessage(message);
 
-        if(message == "exit")
+        if(message == "exit" or message == "")
             break;
 
         std::string receivedMessage = receiveMessage(); 
