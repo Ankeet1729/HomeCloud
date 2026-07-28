@@ -1,10 +1,22 @@
 CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -Iinclude
 BUILD_DIR := build
+OBJ_DIR := $(BUILD_DIR)/obj
 SRC_DIR := src
 
-CLIENT_SRC := $(SRC_DIR)/client.cpp
-SERVER_SRC := $(SRC_DIR)/server.cpp
+CLIENT_SRCS := \
+	$(SRC_DIR)/client/main.cpp \
+	$(SRC_DIR)/client/client.cpp \
+	$(SRC_DIR)/common/socket.cpp
+
+SERVER_SRCS := \
+	$(SRC_DIR)/server/main.cpp \
+	$(SRC_DIR)/server/server.cpp \
+	$(SRC_DIR)/common/socket.cpp
+
+CLIENT_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CLIENT_SRCS))
+SERVER_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SERVER_SRCS))
+
 CLIENT_BIN := $(BUILD_DIR)/client
 SERVER_BIN := $(BUILD_DIR)/server
 
@@ -12,14 +24,21 @@ SERVER_BIN := $(BUILD_DIR)/server
 
 all: $(CLIENT_BIN) $(SERVER_BIN)
 
+$(CLIENT_BIN): $(CLIENT_OBJS) | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+$(SERVER_BIN): $(SERVER_OBJS) | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(CLIENT_BIN): $(CLIENT_SRC) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -o $@
-
-$(SERVER_BIN): $(SERVER_SRC) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -o $@
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 clean:
-	rm -f $(CLIENT_BIN) $(SERVER_BIN)
+	rm -rf $(OBJ_DIR) $(CLIENT_BIN) $(SERVER_BIN)
