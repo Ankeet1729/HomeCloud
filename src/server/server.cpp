@@ -9,6 +9,7 @@ EchoServer::EchoServer(const int listenPort)
     : listenPort(listenPort) {};
 
 void EchoServer::start() {
+    listenSocket.create();
     listenSocket.bind(listenPort);
     listenSocket.listen();
     std::cout << "Server Listening on port: " << listenPort << "\n";
@@ -31,7 +32,8 @@ void EchoServer::start() {
 }
 
 void EchoServer::acceptClient() {
-    acceptSocket.acceptClient(listenSocket.getFd());
+    int fd = listenSocket.acceptClient();
+    acceptSocket.create(fd);
 }
 
 void EchoServer::sendMessage(const std::string& message) {

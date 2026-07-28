@@ -9,14 +9,45 @@
 #include <iostream>
 
 Socket::Socket() {
+    this->fd = -1;
+}
+
+Socket::~Socket() {  // TODO: changes need to be done when move semantics are implemented
+    if(this->fd >= 0)
+        close(this->fd);
+}
+
+Socket::Socket(Socket&& other) {
+    this->fd = other.fd;
+    other.fd = -1;
+}
+
+Socket& Socket::operator=(Socket&& other) {
+    if(this != &other) {
+        if(this->fd >= 0)
+            close(this->fd);
+
+        this->fd = other.fd;
+
+        other.fd = -1;
+    }
+
+    return *this;
+}
+
+void Socket::create() {
     this->fd = socket(AF_INET, SOCK_STREAM, 0);
-    if(this->fd < 0) {
+
+    if (this->fd < 0) {
         throw std::runtime_error(std::strerror(errno));
     }
 }
 
-Socket::~Socket() {  // TODO: changes need to be done when move semantics are implemented
-    close(this->fd);
+void Socket::create(int assignFd) {
+    if(this->fd >= 0)
+        close(this->fd);
+
+    this->fd = assignFd;
 }
 
 int Socket::getFd() const {
@@ -59,15 +90,17 @@ void Socket::listen() {
     }
 }
 
-void Socket::acceptClient(int listenFd) { // TODO: Note that accepted socket replaces an already-existing Socket object.. Do something about it later
+int Socket::acceptClient() { // TODO: Note that accepted socket replaces an already-existing Socket object.. Do something about it later
     struct sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
 
-    this->fd = accept(listenFd, (sockaddr*)&client_addr, &client_len);
+    int fd = accept(this->fd, (sockaddr*)&client_addr, &client_len);
 
-    if (this->fd < 0) {
+    if (fd < 0) {
         throw std::runtime_error(std::strerror(errno));
     }
+
+    return fd;
 }
 
 void Socket::sendMessage(const std::string& message) {

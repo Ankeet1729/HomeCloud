@@ -14,8 +14,12 @@ class Socket {
         Socket(const Socket&) = delete; 
         Socket& operator=(const Socket&) = delete;
 
+        // move semantics implementation
         Socket(Socket&&);
         Socket& operator=(Socket&&);
+
+        void create();
+        void create(int fd);
 
         // Promising the compiler that we won't change any data member
         int getFd() const;
@@ -24,7 +28,7 @@ class Socket {
 
         void bind(const int port);
         void listen();
-        void acceptClient(int listenFd);
+        int acceptClient();
 
         void sendMessage(const std::string& message);
         std::string receiveMessage();

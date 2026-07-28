@@ -9,6 +9,7 @@ EchoClient::EchoClient(const std::string& server_address, const int server_port)
     : server_address(server_address),server_port(server_port), socket() {}
 
 void EchoClient::start() {
+    this->socket.create();
     connectToServer();
     std::cout << receiveMessage() << "\n";
 
