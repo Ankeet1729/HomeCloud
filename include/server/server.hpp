@@ -2,18 +2,20 @@
 
 #include <string>
 #include <vector>
-#include "../common/socket.hpp"
+#include <poll.h>
+#include "common/socket.hpp"
 
 class EchoServer {
     
 
     private:
         Socket listenSocket;
-        Socket acceptSocket;
+        std::vector<Socket> clientSocket;
+        std::vector<pollfd> pollFds;
         const int listenPort;
-        void acceptClient();
-        std::string receiveMessage();
-        void sendMessage(const std::string& message);
+        int acceptClient(Socket& client);
+        std::string receiveMessage(Socket& client);
+        void sendMessage(const std::string& message, Socket& client);
     
     public:
         EchoServer(const int listenPort);

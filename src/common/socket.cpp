@@ -90,7 +90,7 @@ void Socket::listen() {
     }
 }
 
-int Socket::acceptClient() { // TODO: Note that accepted socket replaces an already-existing Socket object.. Do something about it later
+int Socket::acceptClient() {
     struct sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
 
