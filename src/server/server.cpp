@@ -31,32 +31,26 @@ void EchoServer::start() {
             acceptPoll.events = POLLIN;
             acceptPoll.fd = acceptClient(clientSocket.back());
             pollFds.push_back(acceptPoll);
+            std::string hello_msg = "Hello from server\n";
+            sendMessage(hello_msg, clientSocket.back());
+            std::cout << "New Client Accepted" << "\n";
         }
 
         for(int i = 1; i<pollFds.size(); i++) {
             if(pollFds[i].revents & POLLIN) {
                 std::string receivedMessage = receiveMessage(clientSocket[i-1]);
+                if(receivedMessage == "" or receivedMessage == "exit") {
+                    std::cout << "A client just disconnected.." << "\n";
+                    pollFds.erase(pollFds.begin() + i);
+                    clientSocket.erase(clientSocket.begin() + (i-1));
+                    i--;
+                    continue;
+                }
+                std::cout << "receivied message: " << receivedMessage << ".. Echoing back" << "\n";
                 sendMessage(receivedMessage, clientSocket[i-1]);
             }
         }
     }
-
-    // int fd = acceptClient();
-    // std::cout << "Client Connected" << "\n";
-
-    // const char* hello_msg = "Hello from server\n";
-    // sendMessage(std::string(hello_msg), fd);
-
-    // while(true) {
-    //     std::string receivedMessage = receiveMessage(fd);
-    //     if(receivedMessage == "" or receivedMessage == "exit") {
-    //         std::cout << "Exiting.." << "\n";
-    //         break;
-    //     }
-    //     std::cout << "Client sent message: " << receivedMessage << ".. Echoing back" << "\n";
-
-    //     sendMessage(receivedMessage, fd);
-    // } 
 }
 
 int EchoServer::acceptClient(Socket& client) {
