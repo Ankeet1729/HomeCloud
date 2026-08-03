@@ -43,7 +43,7 @@ void EchoServer::start() {
                     std::cout << "A client just disconnected.." << "\n";
                     pollFds.erase(pollFds.begin() + i);
                     clientSocket.erase(clientSocket.begin() + (i-1));
-                    i--;
+                    i--;  // to avoid skipping sockets
                     continue;
                 }
                 std::cout << "receivied message: " << receivedMessage << ".. Echoing back" << "\n";
